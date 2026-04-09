@@ -1,6 +1,5 @@
-import { buildAnalytics } from "@/lib/analytics";
 import { parseEtsyCsv } from "@/lib/etsy";
-import { overwriteMonthRows } from "@/lib/sheets";
+import { overwriteMonthRows, readMonthAnalytics } from "@/lib/sheets";
 import type { EtsyOrderRow } from "@/types/etsy";
 
 function overrideMonth(rows: EtsyOrderRow[], month: string): EtsyOrderRow[] {
@@ -45,14 +44,12 @@ export async function POST(request: Request) {
     }
 
     const primaryMonth = selectedMonth || uploadedMonths[0]?.month || rows[0]?.monthKey || "";
+    const analytics = primaryMonth ? await readMonthAnalytics(primaryMonth) : null;
 
     return Response.json({
       message: "CSV başarıyla yüklendi.",
       uploadedMonths,
-      analytics: buildAnalytics(
-        rows.filter((row) => row.monthKey === primaryMonth),
-        primaryMonth,
-      ),
+      analytics,
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "CSV yükleme başarısız.";

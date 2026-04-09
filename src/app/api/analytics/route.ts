@@ -1,5 +1,4 @@
-import { buildAnalytics } from "@/lib/analytics";
-import { readMonthRows } from "@/lib/sheets";
+import { readMonthAnalytics } from "@/lib/sheets";
 
 export async function GET(request: Request) {
   try {
@@ -11,8 +10,7 @@ export async function GET(request: Request) {
       return Response.json({ error: "month parametresi gerekli." }, { status: 400 });
     }
 
-    const rows = await readMonthRows(month);
-    const analytics = buildAnalytics(rows, month, listingId);
+    const analytics = await readMonthAnalytics(month, listingId);
 
     return Response.json(analytics);
   } catch (error) {

@@ -5,7 +5,8 @@ Next.js (App Router) ile gelistirilmis full stack bir analiz paneli.
 ## Ozellikler
 
 - Etsy'den manuel indirilen CSV dosyasini yukler.
-- Veriyi aylik sekmeler halinde Google Sheets'e kaydeder.
+- Veriyi ucretsiz Vercel Postgres veritabanina aylik olarak kaydeder.
+- Ayni ay tekrar yukleme yapildiginda duplicate olusturmadan akilli upsert uygular.
 - Listing ID bazinda toplam satis adedini gosterir.
 - Secilen listing icin gun gun aylik satis tablosu ve cizgisini cikarir.
 - Tum urunlerin toplam satis icindeki yuzdesini pie chart ile verir.
@@ -39,11 +40,9 @@ cp .env.example .env.local
 
 3. `.env.local` icinde su alanlari doldur:
 
-- `GOOGLE_SHEETS_SPREADSHEET_ID`
-- `GOOGLE_SERVICE_ACCOUNT_EMAIL`
-- `GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY`
+- `POSTGRES_URL`
 
-4. Google service account email'ini hedef spreadsheet'e Editor olarak ekle.
+4. Vercel Dashboard > Storage > Postgres olusturup connection string'i `.env.local` dosyasina ekle.
 
 5. Gelistirme sunucusunu baslat:
 
@@ -68,3 +67,5 @@ npm run dev
 ## Not
 
 Bu proje Next.js 16 ile olusturuldu. Node.js surumunun guncel tutulmasi onerilir.
+Tablo yapisi uygulama acilisinda otomatik olusturulur.
+CSV tekrar yuklemelerinde ayni `month + order_id + listing_id + item_name + day` satiri guncellenir, eksik kalan kayitlar ay bazinda silinir.
