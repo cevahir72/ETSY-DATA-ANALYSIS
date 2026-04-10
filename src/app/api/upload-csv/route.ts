@@ -20,7 +20,7 @@ export async function POST(request: Request) {
     const selectedMonth = String(formData.get("month") || "").trim();
 
     if (!(file instanceof File)) {
-      return Response.json({ error: "CSV dosyası gerekli." }, { status: 400 });
+      return Response.json({ error: "CSV file is required." }, { status: 400 });
     }
 
     const csvText = await file.text();
@@ -47,12 +47,12 @@ export async function POST(request: Request) {
     const analytics = primaryMonth ? await readMonthAnalytics(primaryMonth) : null;
 
     return Response.json({
-      message: "CSV başarıyla yüklendi.",
+      message: "CSV uploaded successfully.",
       uploadedMonths,
       analytics,
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "CSV yükleme başarısız.";
+    const message = error instanceof Error ? error.message : "CSV upload failed.";
     return Response.json({ error: message }, { status: 500 });
   }
 }

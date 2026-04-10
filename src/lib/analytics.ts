@@ -1,4 +1,5 @@
 import { format } from "date-fns";
+import { enUS } from "date-fns/locale";
 import type {
   AnalyticsPayload,
   DailySales,
@@ -97,7 +98,7 @@ export function buildAnalytics(
   }
 
   const listingDaily: DailySales[] = getDaysInMonth(month).map((day) => ({
-    day: format(new Date(`${day}T00:00:00`), "dd MMM"),
+    day: format(new Date(`${day}T00:00:00`), "MMM dd", { locale: enUS }),
     quantity: dailyAccumulator.get(day) ?? 0,
   }));
 
