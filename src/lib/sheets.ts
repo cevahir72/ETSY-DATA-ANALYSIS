@@ -1,4 +1,5 @@
 import { format } from "date-fns";
+import { enUS } from "date-fns/locale";
 import { Pool, type PoolClient } from "@neondatabase/serverless";
 import type { AnalyticsPayload, DailySales, EtsyOrderRow } from "@/types/etsy";
 
@@ -153,6 +154,28 @@ export async function overwriteMonthRows(monthKey: string, rows: EtsyOrderRow[])
 
     await client.query(
       `
+        WITH deduped AS (
+          SELECT DISTINCT ON (month_key, order_id, listing_id, item_name, day_key)
+            sale_date,
+            item_name,
+            quantity,
+            price,
+            listing_id,
+            ship_state,
+            order_id,
+            month_key,
+            day_key,
+            day_of_month
+          FROM tmp_etsy_orders_upload
+          ORDER BY
+            month_key,
+            order_id,
+            listing_id,
+            item_name,
+            day_key,
+            sale_date DESC,
+            quantity DESC
+        )
         INSERT INTO etsy_orders (
           sale_date, item_name, quantity, price, listing_id,
           ship_state, order_id, month_key, day_key, day_of_month
@@ -160,7 +183,7 @@ export async function overwriteMonthRows(monthKey: string, rows: EtsyOrderRow[])
         SELECT
           sale_date, item_name, quantity, price, listing_id,
           ship_state, order_id, month_key, day_key, day_of_month
-        FROM tmp_etsy_orders_upload
+        FROM deduped
         ON CONFLICT (month_key, order_id, listing_id, item_name, day_key)
         DO UPDATE SET
           sale_date = EXCLUDED.sale_date,
@@ -371,7 +394,7 @@ export async function readMonthAnalytics(
     const listingDaily: DailySales[] = getDaysInMonth(monthKey).map((dayKey) => {
       const dayNumber = Number(dayKey.split("-")[2]);
       return {
-        day: format(new Date(`${dayKey}T00:00:00`), "dd MMM"),
+        day: format(new Date(`${dayKey}T00:00:00`), "MMM dd", { locale: enUS }),
         quantity: dailyMap.get(dayNumber) ?? 0,
       };
     });

@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Etsy Siparis Analiz",
-  description: "CSV yukleyip Etsy siparislerini Google Sheets uzerinden analiz et.",
+  title: "Etsy Order Analytics",
+  description: "Upload CSV files, store Etsy orders in PostgreSQL, and analyze sales performance.",
 };
 
 export default function RootLayout({

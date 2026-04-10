@@ -7,14 +7,14 @@ export async function GET(request: Request) {
     const listingId = url.searchParams.get("listingId")?.trim();
 
     if (!month) {
-      return Response.json({ error: "month parametresi gerekli." }, { status: 400 });
+      return Response.json({ error: "month query parameter is required." }, { status: 400 });
     }
 
     const analytics = await readMonthAnalytics(month, listingId);
 
     return Response.json(analytics);
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Analytics okunamadı.";
+    const message = error instanceof Error ? error.message : "Failed to read analytics.";
     return Response.json({ error: message }, { status: 500 });
   }
 }
